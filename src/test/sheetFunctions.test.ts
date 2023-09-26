@@ -13,6 +13,7 @@ FINE-SE`
 		expect(res).toStrictEqual([
 			{ value: 'SE VAR = true' },
 			{ content: [{ value: 'Azione 1' }], value: 'ALLORA' },
+			{ content: [{ value: 'SKIP' }], value: 'ALTRIMENTI' },
 			{ value: 'FINE-SE' }
 		]);
 	});
@@ -33,6 +34,7 @@ FINE-SE`
 				content: [{ value: 'Azione 1' }, { value: 'Azione 2' }, { value: 'Imposta VAR = false' }],
 				value: 'ALLORA'
 			},
+			{ content: [{ value: 'SKIP' }], value: 'ALTRIMENTI' },
 			{ value: 'FINE-SE' }
 		]);
 	});

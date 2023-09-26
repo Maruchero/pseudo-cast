@@ -131,15 +131,31 @@ const expandTree = (rows: string[], index: {i: number}, startKeyword?: string): 
 
 		// Check if there is a new code block
 		let startsWithKeyword = false;
-		for (const startKeyword of Object.keys(closureKeywords)) {
+		const startKeywords = Object.keys(closureKeywords);
+		for (const startKeyword of startKeywords) {
 			if (row.trim().startsWith(startKeyword)) {
+				// Starting of a sub-block
 				startsWithKeyword = true;
+
+				const value = row.trim();
 				index.i++;
+				const content = expandTree(rows, index, startKeyword);
+
 				res.push({
-					value: row.trim(),
-					content: expandTree(rows, index, startKeyword)
+					value,
+					content
 				});
-				index.i--;
+
+				// If 'SE' and not 'ALTRIMENTI' insert default 'SKIP' block
+				if (rows[index.i].trim().endsWith("FINE-SE") && value == "ALLORA") {
+					res.push({
+						value: "ALTRIMENTI",
+						content: [{ value: "SKIP" }]
+					});
+				}
+				index.i--;  // Include also 'FINE-...' keyword
+
+				break;
 			}
 		}
 		// Normal line
