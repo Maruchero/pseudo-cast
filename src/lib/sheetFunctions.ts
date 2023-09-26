@@ -26,9 +26,27 @@ export const toWorkbook = (title: string, author: string, code: string): Workboo
     writePseudoCode(worksheet, startingRow, rows);
 
     const nextStartingRow = startingRow + rows.length + 2;
+	console.dir(getRowTree(code), {depth: null});
+	writeStructuredPaper(worksheet, nextStartingRow, rows);
 
 	return workbook;
 };
+
+const writeStructuredPaper = (worksheet: Worksheet, startingRow: number, rows: Row[]) => {
+	worksheet.getCell(startingRow, 1).value = {
+		richText: [{ text: 'CARTA STRUTTURATA', font: { name: 'Segoe UI', color: { argb: white } } }]
+	};
+
+	const row = worksheet.getRow(startingRow);
+	row.fill = {
+		type: 'pattern',
+		pattern: 'solid',
+		fgColor: { argb: gray }
+	};
+
+    startingRow++;
+	// Write rows
+}
 
 const writePseudoCode = (worksheet: Worksheet, startingRow: number, rows: Row[]) => {
 	worksheet.getCell(startingRow, 1).value = {
@@ -43,6 +61,7 @@ const writePseudoCode = (worksheet: Worksheet, startingRow: number, rows: Row[])
 	};
 
     startingRow++;
+	// Write rows
 	rows.forEach((row, i) => {
 		worksheet.getCell(startingRow + i, row.indentation + 1).value = {
 			richText: [{ text: row.value, font: { name: 'Segoe UI' } }]
@@ -75,3 +94,60 @@ const getIndentation = (str: string) => {
 	}
 	return Math.floor(spaces / 4);
 };
+
+type RowTree = {
+    value: string,
+    content?: RowTree[]
+}
+
+const closureKeywords: {[key: string]: string[]} = {
+	"INIZIO": ["FINE"],
+	"ALLORA": ["FINE-SE", "ALTRIMENTI"],
+	"ALTRIMENTI": ["FINE-SE"],
+	"FINCHE'": ["FINE-RIPETI"]
+}
+
+const isClosureOf = (str: string, startKeyword: string) => {
+	for (const c of closureKeywords[startKeyword]) {
+		if (str.trim().endsWith(c)) return true;
+	}
+	return false;
+}
+
+export const getRowTree = (code: string, startKeyword="INIZIO"): RowTree[] => {
+	const rows = code.split('\n');
+	
+	const res = expandTree(rows, {i: 0}, startKeyword);
+	return res;
+}
+
+const expandTree = (rows: string[], index: {i: number}, startKeyword: string): RowTree[] => {
+	const res = [];
+	for (; index.i < rows.length; index.i++) {
+		const row = rows[index.i];
+
+		// Check if the code block is closed
+		if (isClosureOf(row, startKeyword)) return res;
+
+		// Check if there is a new code block
+		let startsWithKeyword = false;
+		for (const startKeyword of Object.keys(closureKeywords)) {
+			if (row.trim().startsWith(startKeyword)) {
+				startsWithKeyword = true;
+				index.i++;
+				res.push({
+					value: row.trim(),
+					content: expandTree(rows, index, startKeyword)
+				});
+				index.i--;
+			}
+		}
+		// Normal line
+		if (!startsWithKeyword) {	
+			res.push({
+				value: row.trim()
+			});
+		}
+	}
+	return res;
+}

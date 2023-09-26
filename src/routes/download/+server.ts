@@ -16,5 +16,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		'Content-Disposition': 'attachment; filename=' + title + '.xlsx'
 	};
 
-	return new Response(buffer, { headers });
+	// return new Response(buffer, { headers });
+	return new Response();
 };
