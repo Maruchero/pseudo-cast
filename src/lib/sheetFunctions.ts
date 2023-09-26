@@ -117,17 +117,17 @@ const isClosureOf = (str: string, startKeyword: string) => {
 export const getRowTree = (code: string, startKeyword="INIZIO"): RowTree[] => {
 	const rows = code.split('\n');
 	
-	const res = expandTree(rows, {i: 0}, startKeyword);
+	const res = expandTree(rows, {i: 0});
 	return res;
 }
 
-const expandTree = (rows: string[], index: {i: number}, startKeyword: string): RowTree[] => {
+const expandTree = (rows: string[], index: {i: number}, startKeyword?: string): RowTree[] => {
 	const res = [];
 	for (; index.i < rows.length; index.i++) {
 		const row = rows[index.i];
 
 		// Check if the code block is closed
-		if (isClosureOf(row, startKeyword)) return res;
+		if (startKeyword && isClosureOf(row, startKeyword)) return res;
 
 		// Check if there is a new code block
 		let startsWithKeyword = false;

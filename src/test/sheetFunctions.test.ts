@@ -59,7 +59,8 @@ FINE`
 					{ value: 'ALTRIMENTI', content: [{ value: 'Imposta VAR = false' }] },
 					{ value: 'FINE-SE' }
 				]
-			}
+			},
+			{ value: 'FINE' }
 		]);
 	});
 });
@@ -177,9 +178,10 @@ FINE`
 						]
 					},
 					{ value: 'FINE-SE' },
-					{ value: 'Chiusura file I/O' },
+					{ value: 'Chiusura file I/O' }
 				]
-			}
+			},
+			{ value: 'FINE' }
 		]);
 	});
 });
