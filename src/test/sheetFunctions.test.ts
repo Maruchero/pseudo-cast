@@ -11,10 +11,10 @@ FINE-SE`
 		);
 
 		expect(res).toStrictEqual([
-			{ value: 'SE VAR = true' },
-			{ content: [{ value: 'Azione 1' }], value: 'ALLORA' },
-			{ content: [{ value: 'SKIP' }], value: 'ALTRIMENTI' },
-			{ value: 'FINE-SE' }
+			{ value: 'SE VAR = true', size: 1 },
+			{ content: [{ value: 'Azione 1', size: 1 }], value: 'ALLORA', size: 2 },
+			{ content: [{ value: 'SKIP', size: 1 }], value: 'ALTRIMENTI', size: 2 },
+			{ value: 'FINE-SE', size: 0 }
 		]);
 	});
 
@@ -29,13 +29,18 @@ FINE-SE`
 		);
 
 		expect(res).toStrictEqual([
-			{ value: 'SE VAR = true' },
+			{ value: 'SE VAR = true', size: 1 },
 			{
-				content: [{ value: 'Azione 1' }, { value: 'Azione 2' }, { value: 'Imposta VAR = false' }],
-				value: 'ALLORA'
+				content: [
+					{ value: 'Azione 1', size: 1 },
+					{ value: 'Azione 2', size: 1 },
+					{ value: 'Imposta VAR = false', size: 1 }
+				],
+				value: 'ALLORA',
+				size: 3
 			},
-			{ content: [{ value: 'SKIP' }], value: 'ALTRIMENTI' },
-			{ value: 'FINE-SE' }
+			{ content: [{ value: 'SKIP', size: 1 }], value: 'ALTRIMENTI', size: 2 },
+			{ value: 'FINE-SE', size: 0 }
 		]);
 	});
 
@@ -56,13 +61,13 @@ FINE`
 			{
 				value: 'INIZIO',
 				content: [
-					{ value: 'SE VAR = true' },
-					{ value: 'ALLORA', content: [{ value: 'Azione 1' }, { value: 'Azione 2' }] },
-					{ value: 'ALTRIMENTI', content: [{ value: 'Imposta VAR = false' }] },
-					{ value: 'FINE-SE' }
-				]
+					{ value: 'SE VAR = true', size: 1 },
+					{ value: 'ALLORA', content: [{ value: 'Azione 1', size: 1 }, { value: 'Azione 2', size: 1 }], size: 2 },
+					{ value: 'ALTRIMENTI', content: [{ value: 'Imposta VAR = false', size: 1 }], size: 2 },
+					{ value: 'FINE-SE', size: 0 }
+				], size: 5
 			},
-			{ value: 'FINE' }
+			{ value: 'FINE', size: 0 }
 		]);
 	});
 });
@@ -79,10 +84,10 @@ Imposta END = true`
 		);
 
 		expect(res).toStrictEqual([
-			{ value: 'RIPETI' },
-			{ content: [{ value: 'Azione1' }, { value: 'Azione2' }], value: "FINCHE' EOF" },
-			{ value: 'FINE-RIPETI' },
-			{ value: 'Imposta END = true' }
+			{ value: 'RIPETI', size: 1 },
+			{ content: [{ value: 'Azione1', size: 1 }, { value: 'Azione2', size: 1 }], value: "FINCHE' EOF", size: 2 },
+			{ value: 'FINE-RIPETI', size: 0 },
+			{ value: 'Imposta END = true', size: 1 }
 		]);
 	});
 });
@@ -106,20 +111,20 @@ FINE-RIPETI`
 		);
 
 		expect(res).toStrictEqual([
-			{ value: 'RIPETI' },
+			{ value: 'RIPETI', size: 1 },
 			{
 				value: "FINCHE' CIAO = true",
 				content: [
-					{ value: 'Azione1' },
-					{ value: 'Azione2' },
-					{ value: '' },
-					{ value: 'SE EOF AND TEMPERATURA > 10' },
-					{ value: 'ALLORA', content: [{ value: 'Azione1' }] },
-					{ value: 'ALTRIMENTI', content: [{ value: 'Azione2' }, { value: 'Azione3' }] },
-					{ value: 'FINE-SE' }
-				]
+					{ value: 'Azione1', size: 1 },
+					{ value: 'Azione2', size: 1 },
+					{ value: '', size: 1 },
+					{ value: 'SE EOF AND TEMPERATURA > 10', size: 1 },
+					{ value: 'ALLORA', content: [{ value: 'Azione1', size: 1 }], size: 2 },
+					{ value: 'ALTRIMENTI', content: [{ value: 'Azione2', size: 1 }, { value: 'Azione3', size: 1 }], size: 2 },
+					{ value: 'FINE-SE', size: 0 }
+				], size: 8
 			},
-			{ value: 'FINE-RIPETI' }
+			{ value: 'FINE-RIPETI', size: 0 }
 		]);
 	});
 
@@ -155,35 +160,35 @@ FINE`
 			{
 				value: 'INIZIO',
 				content: [
-					{ value: 'Apertura File I/O' },
-					{ value: 'Lettura fuori ciclo record INPUT' },
-					{ value: '' },
-					{ value: 'SE EOF' },
-					{ value: 'ALLORA', content: [{ value: 'Stampa "Archivio Vuoto"' }] },
+					{ value: 'Apertura File I/O', size: 1 },
+					{ value: 'Lettura fuori ciclo record INPUT', size: 1 },
+					{ value: '', size: 1 },
+					{ value: 'SE EOF', size: 1 },
+					{ value: 'ALLORA', content: [{ value: 'Stampa "Archivio Vuoto"', size: 1 }], size: 2 },
 					{
 						value: 'ALTRIMENTI',
 						content: [
-							{ value: 'RIPETI' },
+							{ value: 'RIPETI', size: 1 },
 							{
 								value: "FINCHE' CIAO = true",
 								content: [
-									{ value: 'Azione1' },
-									{ value: 'Azione2' },
-									{ value: '' },
-									{ value: 'SE EOF AND TEMPERATURA > 10' },
-									{ value: 'ALLORA', content: [{ value: 'Azione1' }] },
-									{ value: 'ALTRIMENTI', content: [{ value: 'Azione2' }, { value: 'Azione3' }] },
-									{ value: 'FINE-SE' }
-								]
+									{ value: 'Azione1', size: 1 },
+									{ value: 'Azione2', size: 1 },
+									{ value: '', size: 1 },
+									{ value: 'SE EOF AND TEMPERATURA > 10', size: 1 },
+									{ value: 'ALLORA', content: [{ value: 'Azione1', size: 1 }], size: 2 },
+									{ value: 'ALTRIMENTI', content: [{ value: 'Azione2', size: 1 }, { value: 'Azione3', size: 1 }], size: 2 },
+									{ value: 'FINE-SE', size: 0 }
+								], size: 8
 							},
-							{ value: 'FINE-RIPETI' }
-						]
+							{ value: 'FINE-RIPETI', size: 0 }
+						], size: 9
 					},
-					{ value: 'FINE-SE' },
-					{ value: 'Chiusura file I/O' }
-				]
+					{ value: 'FINE-SE', size: 0 },
+					{ value: 'Chiusura file I/O', size: 1 }
+				], size: 16
 			},
-			{ value: 'FINE' }
+			{ value: 'FINE', size: 0 }
 		]);
 	});
 });

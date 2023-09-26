@@ -97,6 +97,7 @@ const getIndentation = (str: string) => {
 
 type RowTree = {
     value: string,
+	size: number,
     content?: RowTree[]
 }
 
@@ -105,7 +106,9 @@ const closureKeywords: {[key: string]: string[]} = {
 	"ALLORA": ["FINE-SE", "ALTRIMENTI"],
 	"ALTRIMENTI": ["FINE-SE"],
 	"FINCHE'": ["FINE-RIPETI"]
-}
+};
+const closureKeywordsArray = Object.values(closureKeywords).flat();
+
 
 const isClosureOf = (str: string, startKeyword: string) => {
 	for (const c of closureKeywords[startKeyword]) {
@@ -122,7 +125,7 @@ export const getRowTree = (code: string, startKeyword="INIZIO"): RowTree[] => {
 }
 
 const expandTree = (rows: string[], index: {i: number}, startKeyword?: string): RowTree[] => {
-	const res = [];
+	const res: RowTree[] = [];
 	for (; index.i < rows.length; index.i++) {
 		const row = rows[index.i];
 
@@ -140,17 +143,22 @@ const expandTree = (rows: string[], index: {i: number}, startKeyword?: string): 
 				const value = row.trim();
 				index.i++;
 				const content = expandTree(rows, index, startKeyword);
+				let size = content.reduce((sum, current) => sum + current.size, 0);
+				if (value == "ALLORA" && size < 2) size = 2; 
+				if (value == "ALTRIMENTI" && size < 2) size = 2; 
 
 				res.push({
 					value,
-					content
+					content,
+					size
 				});
 
 				// If 'SE' and not 'ALTRIMENTI' insert default 'SKIP' block
 				if (rows[index.i].trim().endsWith("FINE-SE") && value == "ALLORA") {
 					res.push({
 						value: "ALTRIMENTI",
-						content: [{ value: "SKIP" }]
+						content: [{ value: "SKIP", size: 1 }],
+						size: 2
 					});
 				}
 				index.i--;  // Include also 'FINE-...' keyword
@@ -158,10 +166,15 @@ const expandTree = (rows: string[], index: {i: number}, startKeyword?: string): 
 				break;
 			}
 		}
+
 		// Normal line
 		if (!startsWithKeyword) {	
+			let value = row.trim();
+			let size = 1;
+			if (closureKeywordsArray.includes(value.split(' ')[0])) size = 0; // It's a closure keyword
 			res.push({
-				value: row.trim()
+				value,
+				size
 			});
 		}
 	}
