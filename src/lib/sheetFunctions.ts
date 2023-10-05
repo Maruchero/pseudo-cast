@@ -145,7 +145,8 @@ const expandTree = (rows: string[], index: {i: number}, startKeyword?: string): 
 				const content = expandTree(rows, index, startKeyword);
 				let size = content.reduce((sum, current) => sum + current.size, 0);
 				if (value == "ALLORA" && size < 2) size = 2; 
-				if (value == "ALTRIMENTI" && size < 2) size = 2; 
+				else if (value == "ALTRIMENTI" && size < 2) size = 2; 
+				else size += 2;  // Span code block above and below
 
 				res.push({
 					value,
@@ -172,6 +173,7 @@ const expandTree = (rows: string[], index: {i: number}, startKeyword?: string): 
 			let value = row.trim();
 			let size = 1;
 			if (closureKeywordsArray.includes(value.split(' ')[0])) size = 0; // It's a closure keyword
+			else if (value.startsWith('SE') || value.startsWith('RIPETI')) size = 0;
 			res.push({
 				value,
 				size
