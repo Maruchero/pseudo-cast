@@ -16,6 +16,7 @@ FINE-SE`
 		expect(res).toStrictEqual([
 			{ value: 'SE VAR = true', size: 0 },
 			{ content: [{ value: 'Azione 1', size: 1 }], value: 'ALLORA', size: 2 },
+			{ value: 'OR', size: 1 },
 			{ content: [{ value: 'SKIP', size: 1 }], value: 'ALTRIMENTI', size: 2 },
 			{ value: 'FINE-SE', size: 0 }
 		]);
@@ -45,6 +46,7 @@ FINE-SE`
 				value: 'ALLORA',
 				size: 5
 			},
+			{ value: 'OR', size: 1 },
 			{ content: [{ value: 'SKIP', size: 1 }], value: 'ALTRIMENTI', size: 2 },
 			{ value: 'FINE-SE', size: 0 }
 		]);
@@ -71,9 +73,10 @@ FINE`
 				content: [
 					{ value: 'SE VAR = true', size: 0 },
 					{ value: 'ALLORA', content: [{ value: 'Azione 1', size: 1 }], size: 2 },
+					{ value: 'OR', size: 1 },
 					{ value: 'ALTRIMENTI', content: [{ value: 'Imposta VAR = false', size: 1 }], size: 2 },
 					{ value: 'FINE-SE', size: 0 }
-				], size: 6
+				], size: 7
 			},
 			{ value: 'FINE', size: 0 }
 		]);
@@ -134,9 +137,10 @@ FINE-RIPETI`
 					{ value: '', size: 1 },
 					{ value: 'SE EOF AND TEMPERATURA > 10', size: 0 },
 					{ value: 'ALLORA', content: [{ value: 'Azione1', size: 1 }], size: 2 },
+					{ value: 'OR', size: 1 },
 					{ value: 'ALTRIMENTI', content: [{ value: 'Azione2', size: 1 }, { value: 'Azione3', size: 1 }], size: 4 },
 					{ value: 'FINE-SE', size: 0 }
-				], size: 11
+				], size: 12
 			},
 			{ value: 'FINE-RIPETI', size: 0 }
 		]);
@@ -182,6 +186,7 @@ FINE`
 					{ value: '', size: 1 },
 					{ value: 'SE EOF', size: 0 },
 					{ value: 'ALLORA', content: [{ value: 'Stampa "Archivio Vuoto"', size: 1 }], size: 2 },
+					{ value: 'OR', size: 1 },
 					{
 						value: 'ALTRIMENTI',
 						content: [
@@ -194,16 +199,17 @@ FINE`
 									{ value: '', size: 1 },
 									{ value: 'SE EOF AND TEMPERATURA > 10', size: 0 },
 									{ value: 'ALLORA', content: [{ value: 'Azione1', size: 1 }], size: 2 },
+									{ value: 'OR', size: 1 },
 									{ value: 'ALTRIMENTI', content: [{ value: 'Azione2', size: 1 }, { value: 'Azione3', size: 1 }], size: 4 },
 									{ value: 'FINE-SE', size: 0 }
-								], size: 11
+								], size: 12
 							},
 							{ value: 'FINE-RIPETI', size: 0 }
-						], size: 13
+						], size: 14
 					},
 					{ value: 'FINE-SE', size: 0 },
 					{ value: 'Chiusura file I/O', size: 1 }
-				], size: 21
+				], size: 23
 			},
 			{ value: 'FINE', size: 0 }
 		]);

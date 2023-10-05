@@ -143,11 +143,21 @@ const expandTree = (rows: string[], index: {i: number}, startKeyword?: string): 
 				const value = row.trim();
 				index.i++;
 				const content = expandTree(rows, index, startKeyword);
+
 				let size = content.reduce((sum, current) => sum + current.size, 0);
 				if (value == "ALLORA" && size < 2) size = 2; 
 				else if (value == "ALTRIMENTI" && size < 2) size = 2; 
 				else size += 2;  // Span code block above and below
+				
+				// If 'ALTRIMENTI' add 'OR
+				if (value == "ALTRIMENTI") {
+					res.push({
+						value: "OR",
+						size: 1
+					});
+				}
 
+				// Push row
 				res.push({
 					value,
 					content,
@@ -156,6 +166,10 @@ const expandTree = (rows: string[], index: {i: number}, startKeyword?: string): 
 
 				// If 'SE' and not 'ALTRIMENTI' insert default 'SKIP' block
 				if (rows[index.i].trim().endsWith("FINE-SE") && value == "ALLORA") {
+					res.push({
+						value: "OR",
+						size: 1
+					});
 					res.push({
 						value: "ALTRIMENTI",
 						content: [{ value: "SKIP", size: 1 }],
