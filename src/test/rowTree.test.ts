@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getRowTree } from '$lib/sheetFunctions';
+import { getRowTree } from '$lib/rowTree';
 
 describe('getRowTree test with condition', () => {
 	/**
