@@ -68,17 +68,13 @@ FINE`
 		);
 
 		expect(res).toStrictEqual([
-			{
-				value: 'INIZIO',
-				content: [
-					{ value: 'SE VAR = true', size: 0 },
+			{ value: 'INIZIO', size: 1 },
+			{ value: 'SE VAR = true', size: 0 },
 					{ value: 'ALLORA', content: [{ value: 'Azione 1', size: 1 }], size: 2 },
 					{ value: 'OR', size: 1 },
 					{ value: 'ALTRIMENTI', content: [{ value: 'Imposta VAR = false', size: 1 }], size: 2 },
-					{ value: 'FINE-SE', size: 0 }
-				], size: 7
-			},
-			{ value: 'FINE', size: 0 }
+					{ value: 'FINE-SE', size: 0 },
+			{ value: 'FINE', size: 1 }
 		]);
 	});
 });
@@ -99,7 +95,14 @@ Imposta END = true`
 
 		expect(res).toStrictEqual([
 			{ value: 'RIPETI', size: 0 },
-			{ content: [{ value: 'Azione1', size: 1 }, { value: 'Azione2', size: 1 }], value: "FINCHE' EOF", size: 4 },
+			{
+				content: [
+					{ value: 'Azione1', size: 1 },
+					{ value: 'Azione2', size: 1 }
+				],
+				value: "FINCHE' EOF",
+				size: 4
+			},
 			{ value: 'FINE-RIPETI', size: 0 },
 			{ value: 'Imposta END = true', size: 1 }
 		]);
@@ -138,9 +141,17 @@ FINE-RIPETI`
 					{ value: 'SE EOF AND TEMPERATURA > 10', size: 0 },
 					{ value: 'ALLORA', content: [{ value: 'Azione1', size: 1 }], size: 2 },
 					{ value: 'OR', size: 1 },
-					{ value: 'ALTRIMENTI', content: [{ value: 'Azione2', size: 1 }, { value: 'Azione3', size: 1 }], size: 4 },
+					{
+						value: 'ALTRIMENTI',
+						content: [
+							{ value: 'Azione2', size: 1 },
+							{ value: 'Azione3', size: 1 }
+						],
+						size: 4
+					},
 					{ value: 'FINE-SE', size: 0 }
-				], size: 12
+				],
+				size: 12
 			},
 			{ value: 'FINE-RIPETI', size: 0 }
 		]);
@@ -178,40 +189,45 @@ FINE`
 		);
 
 		expect(res).toStrictEqual([
+			{ value: 'INIZIO', size: 1 },
+			{ value: 'Apertura File I/O', size: 1 },
+			{ value: 'Lettura fuori ciclo record INPUT', size: 1 },
+			{ value: '', size: 1 },
+			{ value: 'SE EOF', size: 0 },
+			{ value: 'ALLORA', content: [{ value: 'Stampa "Archivio Vuoto"', size: 1 }], size: 2 },
+			{ value: 'OR', size: 1 },
 			{
-				value: 'INIZIO',
+				value: 'ALTRIMENTI',
 				content: [
-					{ value: 'Apertura File I/O', size: 1 },
-					{ value: 'Lettura fuori ciclo record INPUT', size: 1 },
-					{ value: '', size: 1 },
-					{ value: 'SE EOF', size: 0 },
-					{ value: 'ALLORA', content: [{ value: 'Stampa "Archivio Vuoto"', size: 1 }], size: 2 },
-					{ value: 'OR', size: 1 },
+					{ value: 'RIPETI', size: 0 },
 					{
-						value: 'ALTRIMENTI',
+						value: "FINCHE' CIAO = true",
 						content: [
-							{ value: 'RIPETI', size: 0 },
+							{ value: 'Azione1', size: 1 },
+							{ value: 'Azione2', size: 1 },
+							{ value: '', size: 1 },
+							{ value: 'SE EOF AND TEMPERATURA > 10', size: 0 },
+							{ value: 'ALLORA', content: [{ value: 'Azione1', size: 1 }], size: 2 },
+							{ value: 'OR', size: 1 },
 							{
-								value: "FINCHE' CIAO = true",
+								value: 'ALTRIMENTI',
 								content: [
-									{ value: 'Azione1', size: 1 },
 									{ value: 'Azione2', size: 1 },
-									{ value: '', size: 1 },
-									{ value: 'SE EOF AND TEMPERATURA > 10', size: 0 },
-									{ value: 'ALLORA', content: [{ value: 'Azione1', size: 1 }], size: 2 },
-									{ value: 'OR', size: 1 },
-									{ value: 'ALTRIMENTI', content: [{ value: 'Azione2', size: 1 }, { value: 'Azione3', size: 1 }], size: 4 },
-									{ value: 'FINE-SE', size: 0 }
-								], size: 12
+									{ value: 'Azione3', size: 1 }
+								],
+								size: 4
 							},
-							{ value: 'FINE-RIPETI', size: 0 }
-						], size: 14
+							{ value: 'FINE-SE', size: 0 }
+						],
+						size: 12
 					},
-					{ value: 'FINE-SE', size: 0 },
-					{ value: 'Chiusura file I/O', size: 1 }
-				], size: 23
+					{ value: 'FINE-RIPETI', size: 0 }
+				],
+				size: 14
 			},
-			{ value: 'FINE', size: 0 }
+			{ value: 'FINE-SE', size: 0 },
+			{ value: 'Chiusura file I/O', size: 1 },
+			{ value: 'FINE', size: 1 }
 		]);
 	});
 });

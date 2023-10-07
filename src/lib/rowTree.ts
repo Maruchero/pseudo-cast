@@ -11,7 +11,6 @@ export type RowTree = {
  * CLOSURE KEYWORDS
  */
 const codeBlocksKeywords: { [key: string]: string[] } = {
-	INIZIO: ['FINE'],
 	ALLORA: ['FINE-SE', 'ALTRIMENTI'],
 	ALTRIMENTI: ['FINE-SE'],
 	"FINCHE'": ['FINE-RIPETI']
@@ -49,7 +48,7 @@ export const getRowTree = (code: string): RowTree[] => {
  * @param rows tree of rows
  * @returns tree size
  */
-const computeTreeSize = (rows: RowTree[]): number => {
+export const computeTreeSize = (rows: RowTree[]): number => {
 	return rows.reduce((sum, current) => sum + current.size, 0);
 };
 
@@ -61,7 +60,6 @@ const computeTreeSize = (rows: RowTree[]): number => {
  * @returns new block size
  */
 const getSpacedSize = (keyword: string, size: number) => {
-	console.log(keyword == 'ALLORA', size < 2);
 	if (keyword == 'ALLORA' && size < 2) return 2;
 	if (keyword == 'ALTRIMENTI' && size < 2) return 2;
 	return size + 2; // Span code block above and below
