@@ -160,7 +160,7 @@ const destructureRowTree = (
 	// Write block content
 	if (ifBlock) {
 		worksheet.getCell(
-			blockCentralCellY + 1,
+			blockCentralCellY + 2,
 			DESTRUCTURE_SPAN * nesting + 1
 		).value = getRichtextValue(`(${rowTree.value})`);
 	} else if (elseBlock) {
