@@ -1,0 +1,77 @@
+:global(body) {
+    margin: 0;
+    font-family: 'Segoe UI', 'Calibri', sans-serif;
+}
+
+h1 {
+    padding-left: 10px;
+}
+
+form {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    /* grid-auto-flow: column; */
+}
+
+form > img {
+    margin-top: 0.35em;
+    display: block;
+    height: 1.3em;
+}
+
+input {
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 5px;
+    font-family: inherit;
+    font-size: inherit;
+
+    border-radius: 7px;
+    padding: 5px 10px;
+    border: none;
+    background: #f0f0f0;
+}
+
+textarea {
+    box-sizing: border-box;
+    width: 100%;
+    font-family: 'Source Code Pro';
+    font-size: inherit;
+
+    border-radius: 7px;
+    padding: 5px 10px;
+    border: none;
+    background: #f0f0f0;
+}
+
+.submit-button {
+    justify-self: center;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+button {
+    cursor: pointer;
+
+    border-radius: 5px;
+    padding: 5px 10px;
+
+    border: none;
+    background: rgb(56, 180, 73);
+
+    font-family: inherit;
+    font-weight: 600;
+    font-size: inherit;
+    color: #fff;
+}
+
+.submit-button > img {
+    display: block;
+    height: 1.5em;
+    filter: drop-shadow(0 0 7px #fff9);
+}
