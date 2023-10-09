@@ -1,6 +1,8 @@
-import { Workbook, type Worksheet, type RichText } from 'exceljs';
+import exceljs from 'exceljs';
 import { getRowTree, computeTreeSize } from './rowTree';
 import type { RowTree } from './rowTree';
+
+const { Workbook, Worksheet, RichText } = exceljs;
 
 const white = 'ffffffff';
 const gray = 'ffb4b4b4';
