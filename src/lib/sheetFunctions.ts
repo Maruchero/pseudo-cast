@@ -34,6 +34,13 @@ export const toWorkbook = (title: string, author: string, code: string): Workboo
 	return workbook;
 };
 
+/**
+ * Writes Structured Paper
+ * @param worksheet worksheet
+ * @param startingRow starting row
+ * @param code plain pseudo-code
+ * @param title program title
+ */
 const writeStructuredPaper = (
 	worksheet: Worksheet,
 	startingRow: number,
@@ -59,7 +66,6 @@ const writeStructuredPaper = (
 		size: computeTreeSize(rows) + 2,
 		content: rows
 	};
-	worksheet.getCell(startingRow + 1, 1).value = title;
 	destructureRowTree(worksheet, startingRow + 1, rowTree);
 };
 
@@ -104,8 +110,9 @@ const destructureRowTree = (
 	nesting = 0
 ) => {
 	// Block name
+	const blockCentralCellY = Math.round(startingRow + rowTree.size / 2) - 1;
 	if (rowTree.size && rowTree.content)
-		worksheet.getCell(startingRow, DESTRUCTURE_SPAN * nesting + 1).value = 'Nome Azione';
+		worksheet.getCell(blockCentralCellY, DESTRUCTURE_SPAN * nesting + 1).value = 'Nome Azione';
 
 	// Variables
 	const ifBlock = rowTree.value.startsWith('SE');
@@ -118,12 +125,12 @@ const destructureRowTree = (
 
 	// Write block content
 	if (ifBlock) {
-		worksheet.getCell(startingRow + 1, DESTRUCTURE_SPAN * nesting + 1).value = `(${rowTree.value})`;
+		worksheet.getCell(blockCentralCellY + 1, DESTRUCTURE_SPAN * nesting + 1).value = `(${rowTree.value})`;
 	} else if (elseBlock) {
-		worksheet.getCell(startingRow + 1, DESTRUCTURE_SPAN * nesting + 1).value = `(ELSE)`;
+		worksheet.getCell(blockCentralCellY + 1, DESTRUCTURE_SPAN * nesting + 1).value = `(ELSE)`;
 	} else if (untilBlock) {
 		worksheet.getCell(
-			startingRow + 1,
+			blockCentralCellY + 1,
 			DESTRUCTURE_SPAN * nesting + 1
 		).value = `(UNTIL ${rowTree.value.substring("FINCHE' ".length)})`;
 	}
