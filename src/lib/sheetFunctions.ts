@@ -1,4 +1,4 @@
-import { Workbook, type Worksheet } from 'exceljs';
+import { Workbook, type Worksheet, type RichText } from 'exceljs';
 import { getRowTree, computeTreeSize } from './rowTree';
 import type { RowTree } from './rowTree';
 
@@ -28,7 +28,6 @@ export const toWorkbook = (title: string, author: string, code: string): Workboo
 	writePseudoCode(worksheet, startingRow, rows);
 
 	const nextStartingRow = startingRow + rows.length + 2;
-	console.dir(getRowTree(code), { depth: null });
 	writeStructuredPaper(worksheet, nextStartingRow, code, title);
 
 	return workbook;
@@ -102,7 +101,42 @@ const drawBlockParenthesis = (
 	worksheet.getCell(centralY, column - 1).border = { bottom: { style: 'thin' } };
 };
 
+const PSEUDOCODE_KW = {
+	specialWords: ['SE', 'ALLORA', 'ALTRIMENTI', 'RIPETI', 'FINCHE\'', 'INIZIO', 'FINE', 'OR', 'AND', 'NOT', 'FINE-SE', 'FINE-RIPETI']
+}
+
+const STRUCTURED_PAPER_KW = {
+	specialWords: ['(', ')', 'ELSE', 'SE', 'UNTIL', 'INIZIO', 'FINE', 'OR', 'AND', 'NOT']
+}
+
+const getRichtexts = (line: string, keywords: { specialWords: string[] }): RichText[] => {
+	const richTexts = [];
+	const splitted = line.split(/(?=[ ()])|(?<=[ ()])/);
+	
+	for (const word of splitted) {
+		if (keywords.specialWords.includes(word)) {
+			richTexts.push({ text: word, font: { color: { argb: orange }, bold: true } });
+		} else {
+			richTexts.push({ text: word });
+		}
+	}
+
+	return richTexts;
+}
+
+const getRichtextValue = (line: string, keywords: { specialWords: string[] } = STRUCTURED_PAPER_KW): { richText: RichText[] } => {
+	return { richText: getRichtexts(line, keywords) }
+}
+
 const DESTRUCTURE_SPAN = 8;
+
+/**
+ * Destructures and writes a structured paper on a worksheet
+ * @param worksheet worksheet
+ * @param startingRow starting row
+ * @param rowTree RowTree to write on the sheet
+ * @param nesting (default=0) nesting level
+ */
 const destructureRowTree = (
 	worksheet: Worksheet,
 	startingRow: number,
@@ -125,14 +159,17 @@ const destructureRowTree = (
 
 	// Write block content
 	if (ifBlock) {
-		worksheet.getCell(blockCentralCellY + 1, DESTRUCTURE_SPAN * nesting + 1).value = `(${rowTree.value})`;
+		worksheet.getCell(
+			blockCentralCellY + 1,
+			DESTRUCTURE_SPAN * nesting + 1
+		).value = getRichtextValue(`(${rowTree.value})`);
 	} else if (elseBlock) {
-		worksheet.getCell(blockCentralCellY + 1, DESTRUCTURE_SPAN * nesting + 1).value = `(ELSE)`;
+		worksheet.getCell(blockCentralCellY + 1, DESTRUCTURE_SPAN * nesting + 1).value = getRichtextValue(`(ELSE)`);
 	} else if (untilBlock) {
 		worksheet.getCell(
 			blockCentralCellY + 1,
 			DESTRUCTURE_SPAN * nesting + 1
-		).value = `(UNTIL ${rowTree.value.substring("FINCHE' ".length)})`;
+		).value = getRichtextValue(`(UNTIL ${rowTree.value.substring("FINCHE' ".length)})`);
 	}
 
 	if (conditionBlockWithoutNesting && rowTree.content) {
@@ -154,7 +191,7 @@ const destructureRowTree = (
 			nestedStartingRow += block.size;
 		}
 	} else if (rowTree.size != 0) {
-		worksheet.getCell(startingRow, DESTRUCTURE_SPAN * nesting + 1).value = rowTree.value;
+		worksheet.getCell(startingRow, DESTRUCTURE_SPAN * nesting + 1).value = getRichtextValue(rowTree.value);
 	}
 
 	// Go to next row
@@ -176,9 +213,7 @@ const writePseudoCode = (worksheet: Worksheet, startingRow: number, rows: Row[])
 	startingRow++;
 	// Write rows
 	rows.forEach((row, i) => {
-		worksheet.getCell(startingRow + i, row.indentation + 1).value = {
-			richText: [{ text: row.value, font: { name: 'Segoe UI' } }]
-		};
+		worksheet.getCell(startingRow + i, row.indentation + 1).value = getRichtextValue(row.value, PSEUDOCODE_KW);
 	});
 };
 
