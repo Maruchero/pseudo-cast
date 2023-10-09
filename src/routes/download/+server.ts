@@ -8,7 +8,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	const code = data.get('pseudocodifica') as string;
 
 	// Convert to sheet
-	const workbook = toWorkbook(title, author, code);
+	const workbook = toWorkbook(title, author, code.replaceAll('\r', ''));
 	
 	const buffer = await workbook.xlsx.writeBuffer();
 	const headers = {

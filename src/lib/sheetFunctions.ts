@@ -2,14 +2,12 @@ import exceljs from 'exceljs';
 import { getRowTree, computeTreeSize } from './rowTree';
 import type { RowTree } from './rowTree';
 
-const { Workbook, Worksheet, RichText } = exceljs;
-
 const white = 'ffffffff';
 const gray = 'ffb4b4b4';
 const orange = 'fff5aa00';
 
-export const toWorkbook = (title: string, author: string, code: string): Workbook => {
-	let workbook = new Workbook();
+export const toWorkbook = (title: string, author: string, code: string): exceljs.Workbook => {
+	let workbook = new exceljs.Workbook();
 	let worksheet = workbook.addWorksheet(title);
 
 	// Shape cells to squares
@@ -43,7 +41,7 @@ export const toWorkbook = (title: string, author: string, code: string): Workboo
  * @param title program title
  */
 const writeStructuredPaper = (
-	worksheet: Worksheet,
+	worksheet: exceljs.Worksheet,
 	startingRow: number,
 	code: string,
 	title: string
@@ -78,7 +76,7 @@ const writeStructuredPaper = (
  * @param height height of the parenthesis
  */
 const drawBlockParenthesis = (
-	worksheet: Worksheet,
+	worksheet: exceljs.Worksheet,
 	startingRow: number,
 	column: number,
 	height: number
@@ -111,7 +109,7 @@ const STRUCTURED_PAPER_KW = {
 	specialWords: ['(', ')', 'ELSE', 'SE', 'UNTIL', 'INIZIO', 'FINE', 'OR', 'AND', 'NOT']
 }
 
-const getRichtexts = (line: string, keywords: { specialWords: string[] }): RichText[] => {
+const getRichtexts = (line: string, keywords: { specialWords: string[] }): exceljs.RichText[] => {
 	const richTexts = [];
 	const splitted = line.split(/(?=[ ()])|(?<=[ ()])/);
 	
@@ -126,7 +124,7 @@ const getRichtexts = (line: string, keywords: { specialWords: string[] }): RichT
 	return richTexts;
 }
 
-const getRichtextValue = (line: string, keywords: { specialWords: string[] } = STRUCTURED_PAPER_KW): { richText: RichText[] } => {
+const getRichtextValue = (line: string, keywords: { specialWords: string[] } = STRUCTURED_PAPER_KW): { richText: exceljs.RichText[] } => {
 	return { richText: getRichtexts(line, keywords) }
 }
 
@@ -140,7 +138,7 @@ const DESTRUCTURE_SPAN = 8;
  * @param nesting (default=0) nesting level
  */
 const destructureRowTree = (
-	worksheet: Worksheet,
+	worksheet: exceljs.Worksheet,
 	startingRow: number,
 	rowTree: RowTree,
 	nesting = 0
@@ -200,7 +198,7 @@ const destructureRowTree = (
 	startingRow += rowTree.size;
 };
 
-const writePseudoCode = (worksheet: Worksheet, startingRow: number, rows: Row[]) => {
+const writePseudoCode = (worksheet: exceljs.Worksheet, startingRow: number, rows: Row[]) => {
 	worksheet.getCell(startingRow, 1).value = {
 		richText: [{ text: 'PSEUDOCODIFICA', font: { name: 'Segoe UI', color: { argb: white } } }]
 	};
@@ -228,6 +226,7 @@ const splitRows = (str: string): Row[] => {
 	const rows = str.split('\n');
 	const res = [];
 	for (const row of rows) {
+		console.log(row);
 		res.push({
 			indentation: getIndentation(row),
 			value: row.trim()
