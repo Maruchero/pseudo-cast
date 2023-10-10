@@ -6,8 +6,8 @@ const bold = true;
 
 // Keywords
 type LinterKeywords = {
-    specialWords: string[]
-}
+	specialWords: string[];
+};
 
 export const PSEUDOCODE_KW = {
 	specialWords: [
@@ -51,9 +51,9 @@ const getRichtexts = (line: string, keywords: LinterKeywords): exceljs.RichText[
 
 	for (const word of splitted) {
 		if (keywords.specialWords.includes(word.toUpperCase())) {
-			richTexts.push({ text: word, font: { color: { argb: orange }, bold } });
+			richTexts.push({ text: word, font: { name: 'Segoe UI', color: { argb: orange }, bold } });
 		} else {
-			richTexts.push({ text: word });
+			richTexts.push({ text: word, font: { name: 'Segoe UI' } });
 		}
 	}
 
