@@ -102,11 +102,11 @@ const drawBlockParenthesis = (
 };
 
 const PSEUDOCODE_KW = {
-	specialWords: ['SE', 'ALLORA', 'ALTRIMENTI', 'RIPETI', 'FINCHE\'', 'INIZIO', 'FINE', 'OR', 'AND', 'NOT', 'FINE-SE', 'FINE-RIPETI']
+	specialWords: ['SE', 'ALLORA', 'ALTRIMENTI', 'RIPETI', 'FINCHE\'', 'INIZIO', 'FINE', 'OR', 'AND', 'NOT', 'FINE-SE', 'FINE-RIPETI', 'RICHIAMA']
 }
 
 const STRUCTURED_PAPER_KW = {
-	specialWords: ['(', ')', 'ELSE', 'SE', 'UNTIL', 'INIZIO', 'FINE', 'OR', 'AND', 'NOT']
+	specialWords: ['(', ')', 'ELSE', 'SE', 'UNTIL', 'INIZIO', 'FINE', 'OR', 'AND', 'NOT', 'RICHIAMA', 'SKIP']
 }
 
 const getRichtexts = (line: string, keywords: { specialWords: string[] }): exceljs.RichText[] => {
@@ -114,7 +114,7 @@ const getRichtexts = (line: string, keywords: { specialWords: string[] }): excel
 	const splitted = line.split(/(?=[ ()])|(?<=[ ()])/);
 	
 	for (const word of splitted) {
-		if (keywords.specialWords.includes(word)) {
+		if (keywords.specialWords.includes(word.toUpperCase())) {
 			richTexts.push({ text: word, font: { color: { argb: orange }, bold: true } });
 		} else {
 			richTexts.push({ text: word });
@@ -149,11 +149,12 @@ const destructureRowTree = (
 		worksheet.getCell(blockCentralCellY, DESTRUCTURE_SPAN * nesting + 1).value = 'Nome Azione';
 
 	// Variables
-	const ifBlock = rowTree.value.startsWith('SE');
-	const elseBlock = rowTree.value.startsWith('ALTRIMENTI');
-	const untilBlock = rowTree.value.startsWith("FINCHE'");
+	const ifBlock = rowTree.value.startsWith('SE ');
+	const elseBlock = rowTree.value == 'ALTRIMENTI';
+	const untilBlock = rowTree.value.startsWith("FINCHE' ");
+	const isORKeyword = rowTree.value == 'OR';
 	const conditionBlockWithoutNesting =
-		(rowTree.value.startsWith('ALLORA') || rowTree.value.startsWith('ALTRIMENTI')) &&
+		(rowTree.value == 'ALLORA' || rowTree.value == 'ALTRIMENTI') &&
 		rowTree.content &&
 		rowTree.content.length == 1;
 
@@ -173,7 +174,7 @@ const destructureRowTree = (
 	}
 
 	if (conditionBlockWithoutNesting && rowTree.content) {
-		worksheet.getCell(startingRow, DESTRUCTURE_SPAN * nesting + 1).value = rowTree.content[0].value;
+		worksheet.getCell(startingRow, DESTRUCTURE_SPAN * nesting + 1).value = getRichtextValue(rowTree.content[0].value);
 	} else if (rowTree.content) {
 		// Recursion / Nesting
 		// Draw borders
@@ -190,7 +191,11 @@ const destructureRowTree = (
 			destructureRowTree(worksheet, nestedStartingRow, block, nesting + 1);
 			nestedStartingRow += block.size;
 		}
+	} else if (isORKeyword) {
+		// Indent OR keyword
+		worksheet.getCell(startingRow, DESTRUCTURE_SPAN * nesting + 3).value = getRichtextValue(rowTree.value);
 	} else if (rowTree.size != 0) {
+		// Normal line
 		worksheet.getCell(startingRow, DESTRUCTURE_SPAN * nesting + 1).value = getRichtextValue(rowTree.value);
 	}
 
@@ -226,7 +231,6 @@ const splitRows = (str: string): Row[] => {
 	const rows = str.split('\n');
 	const res = [];
 	for (const row of rows) {
-		console.log(row);
 		res.push({
 			indentation: getIndentation(row),
 			value: row.trim()
