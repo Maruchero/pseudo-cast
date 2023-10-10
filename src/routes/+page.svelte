@@ -36,6 +36,19 @@
 <h1>Pseudo Carta Strutturata</h1>
 
 <form method="post" action="/download">
+	<div class="badges">
+		<div class="badge">
+			v0.0.1
+		</div>
+		<div class="badge">
+			IT
+			<img src="flag-italy.png" alt="" style="border-radius: 2px; height: 1em;">
+		</div>
+		<a class="badge" href="https://github.com/Maruchero/pseudo-cast" target="_blank">
+			<img src="github.svg" alt="">
+		</a>
+	</div>
+
 	<img src="/user.png" alt="" />
 	<input type="text" name="autore" placeholder="Autore" bind:value={author} />
 	<img src="/rename.png" alt="" />
@@ -64,6 +77,36 @@
 
 		display: flex;
 		flex-direction: column;
+	}
+
+	.badges {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+
+		padding: 10px;
+		display: flex;
+		gap: 10px;
+
+		display: flex;
+		justify-content: end;
+	}
+
+	.badge {
+		display: flex;
+		align-items: center;
+		padding: 3px 7px;
+		gap: 7px;
+
+		border-radius: 5px;
+		background: #eee;
+	}
+
+	.badge > img {
+		height: 1.5em;
+		overflow: hidden;
+		display: block;
 	}
 
 	h1 {
