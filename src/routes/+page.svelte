@@ -61,13 +61,21 @@
 	:global(body) {
 		margin: 0;
 		font-family: 'Segoe UI', 'Calibri', sans-serif;
+
+		display: flex;
+		flex-direction: column;
 	}
 
 	h1 {
+		text-align: center;
 		padding-left: 10px;
 	}
 
 	form {
+		width: 100%;
+		max-width: 100vh;
+		margin: auto;
+
 		padding: 10px;
 		display: grid;
 		grid-template-columns: max-content 1fr;
@@ -100,6 +108,9 @@
 		width: 100%;
 		font-family: 'Source Code Pro';
 		font-size: inherit;
+		text-wrap: nowrap;
+
+		resize: vertical;
 
 		border-radius: 7px;
 		padding: 5px 10px;
