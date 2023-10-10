@@ -122,7 +122,7 @@ const destructureRowTree = (
 	const blockCentralCellY = Math.round(startingRow + rowTree.size / 2) - 1;
 	if (rowTree.size && rowTree.content) {
 		worksheet.getCell(blockCentralCellY, DESTRUCTURING_LEVEL_WIDTH * nesting + 1).value =
-			'Nome Azione';
+			getRichtextValue('Nome Azione', STRUCTURED_PAPER_KW);
 		if (rowTree.value == 'ALLORA' && ifBlockBuffer.length) {
 			worksheet.getCell(blockCentralCellY + 1, DESTRUCTURING_LEVEL_WIDTH * nesting + 1).value =
 				ifBlockBuffer.pop();
