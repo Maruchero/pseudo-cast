@@ -1,6 +1,7 @@
 import exceljs from 'exceljs';
 import { getRowTree, computeTreeSize } from './rowTree';
 import type { RowTree } from './rowTree';
+import { PSEUDOCODE_KW, STRUCTURED_PAPER_KW, getRichtextValue } from './linter';
 
 const white = 'ffffffff';
 const gray = 'ffb4b4b4';
@@ -101,35 +102,8 @@ const drawBlockParenthesis = (
 	worksheet.getCell(centralY, column - 1).border = { bottom: { style: 'thin' } };
 };
 
-const PSEUDOCODE_KW = {
-	specialWords: ['SE', 'ALLORA', 'ALTRIMENTI', 'RIPETI', 'FINCHE\'', 'INIZIO', 'FINE', 'OR', 'AND', 'NOT', 'FINE-SE', 'FINE-RIPETI', 'RICHIAMA']
-}
-
-const STRUCTURED_PAPER_KW = {
-	specialWords: ['(', ')', 'ELSE', 'SE', 'UNTIL', 'INIZIO', 'FINE', 'OR', 'AND', 'NOT', 'RICHIAMA', 'SKIP']
-}
-
-const getRichtexts = (line: string, keywords: { specialWords: string[] }): exceljs.RichText[] => {
-	const richTexts = [];
-	const splitted = line.split(/(?=[ ()])|(?<=[ ()])/);
-	
-	for (const word of splitted) {
-		if (keywords.specialWords.includes(word.toUpperCase())) {
-			richTexts.push({ text: word, font: { color: { argb: orange }, bold: true } });
-		} else {
-			richTexts.push({ text: word });
-		}
-	}
-
-	return richTexts;
-}
-
-const getRichtextValue = (line: string, keywords: { specialWords: string[] } = STRUCTURED_PAPER_KW): { richText: exceljs.RichText[] } => {
-	return { richText: getRichtexts(line, keywords) }
-}
-
-const DESTRUCTURE_SPAN = 8;
-const ifBlockBuffer: { richText: exceljs.RichText[] }[] = [];  // Used to store if conditions and write them later
+const DESTRUCTURING_LEVEL_WIDTH = 8;
+const ifBlockBuffer: { richText: exceljs.RichText[] }[] = []; // Used to store if conditions and write them later
 
 /**
  * Destructures and writes a structured paper on a worksheet
@@ -147,12 +121,11 @@ const destructureRowTree = (
 	// Block name
 	const blockCentralCellY = Math.round(startingRow + rowTree.size / 2) - 1;
 	if (rowTree.size && rowTree.content) {
-		worksheet.getCell(blockCentralCellY, DESTRUCTURE_SPAN * nesting + 1).value = 'Nome Azione';
+		worksheet.getCell(blockCentralCellY, DESTRUCTURING_LEVEL_WIDTH * nesting + 1).value =
+			'Nome Azione';
 		if (rowTree.value == 'ALLORA' && ifBlockBuffer.length) {
-			worksheet.getCell(
-				blockCentralCellY + 1,
-				DESTRUCTURE_SPAN * nesting + 1
-			).value = ifBlockBuffer.pop();
+			worksheet.getCell(blockCentralCellY + 1, DESTRUCTURING_LEVEL_WIDTH * nesting + 1).value =
+				ifBlockBuffer.pop();
 		}
 	}
 
@@ -168,25 +141,28 @@ const destructureRowTree = (
 
 	// Write block content
 	if (ifBlock) {
-		ifBlockBuffer.push(getRichtextValue(`(${rowTree.value})`));
+		ifBlockBuffer.push(getRichtextValue(`(${rowTree.value})`, STRUCTURED_PAPER_KW));
 	} else if (elseBlock) {
-		worksheet.getCell(blockCentralCellY + 1, DESTRUCTURE_SPAN * nesting + 1).value = getRichtextValue(`(ELSE)`);
+		worksheet.getCell(blockCentralCellY + 1, DESTRUCTURING_LEVEL_WIDTH * nesting + 1).value =
+			getRichtextValue(`(ELSE)`, STRUCTURED_PAPER_KW);
 	} else if (untilBlock) {
-		worksheet.getCell(
-			blockCentralCellY + 1,
-			DESTRUCTURE_SPAN * nesting + 1
-		).value = getRichtextValue(`(UNTIL ${rowTree.value.substring("FINCHE' ".length)})`);
+		worksheet.getCell(blockCentralCellY + 1, DESTRUCTURING_LEVEL_WIDTH * nesting + 1).value =
+			getRichtextValue(
+				`(UNTIL ${rowTree.value.substring("FINCHE' ".length)})`,
+				STRUCTURED_PAPER_KW
+			);
 	}
 
 	if (conditionBlockWithoutNesting && rowTree.content) {
-		worksheet.getCell(startingRow, DESTRUCTURE_SPAN * nesting + 1).value = getRichtextValue(rowTree.content[0].value);
+		worksheet.getCell(startingRow, DESTRUCTURING_LEVEL_WIDTH * nesting + 1).value =
+			getRichtextValue(rowTree.content[0].value, STRUCTURED_PAPER_KW);
 	} else if (rowTree.content) {
 		// Recursion / Nesting
 		// Draw borders
 		drawBlockParenthesis(
 			worksheet,
 			startingRow,
-			DESTRUCTURE_SPAN * (nesting + 1),
+			DESTRUCTURING_LEVEL_WIDTH * (nesting + 1),
 			rowTree.size - 1
 		);
 
@@ -198,10 +174,12 @@ const destructureRowTree = (
 		}
 	} else if (isORKeyword) {
 		// Indent OR keyword
-		worksheet.getCell(startingRow, DESTRUCTURE_SPAN * nesting + 3).value = getRichtextValue(rowTree.value);
+		worksheet.getCell(startingRow, DESTRUCTURING_LEVEL_WIDTH * nesting + 3).value =
+			getRichtextValue(rowTree.value, STRUCTURED_PAPER_KW);
 	} else if (rowTree.size != 0) {
 		// Normal line
-		worksheet.getCell(startingRow, DESTRUCTURE_SPAN * nesting + 1).value = getRichtextValue(rowTree.value);
+		worksheet.getCell(startingRow, DESTRUCTURING_LEVEL_WIDTH * nesting + 1).value =
+			getRichtextValue(rowTree.value, STRUCTURED_PAPER_KW);
 	}
 
 	// Go to next row
@@ -223,7 +201,10 @@ const writePseudoCode = (worksheet: exceljs.Worksheet, startingRow: number, rows
 	startingRow++;
 	// Write rows
 	rows.forEach((row, i) => {
-		worksheet.getCell(startingRow + i, row.indentation + 1).value = getRichtextValue(row.value, PSEUDOCODE_KW);
+		worksheet.getCell(startingRow + i, row.indentation + 1).value = getRichtextValue(
+			row.value,
+			PSEUDOCODE_KW
+		);
 	});
 };
 
