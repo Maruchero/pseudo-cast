@@ -129,6 +129,7 @@ const getRichtextValue = (line: string, keywords: { specialWords: string[] } = S
 }
 
 const DESTRUCTURE_SPAN = 8;
+const ifBlockBuffer: { richText: exceljs.RichText[] }[] = [];  // Used to store if conditions and write them later
 
 /**
  * Destructures and writes a structured paper on a worksheet
@@ -145,8 +146,15 @@ const destructureRowTree = (
 ) => {
 	// Block name
 	const blockCentralCellY = Math.round(startingRow + rowTree.size / 2) - 1;
-	if (rowTree.size && rowTree.content)
+	if (rowTree.size && rowTree.content) {
 		worksheet.getCell(blockCentralCellY, DESTRUCTURE_SPAN * nesting + 1).value = 'Nome Azione';
+		if (rowTree.value == 'ALLORA' && ifBlockBuffer.length) {
+			worksheet.getCell(
+				blockCentralCellY + 1,
+				DESTRUCTURE_SPAN * nesting + 1
+			).value = ifBlockBuffer.pop();
+		}
+	}
 
 	// Variables
 	const ifBlock = rowTree.value.startsWith('SE ');
@@ -160,10 +168,7 @@ const destructureRowTree = (
 
 	// Write block content
 	if (ifBlock) {
-		worksheet.getCell(
-			blockCentralCellY + 2,
-			DESTRUCTURE_SPAN * nesting + 1
-		).value = getRichtextValue(`(${rowTree.value})`);
+		ifBlockBuffer.push(getRichtextValue(`(${rowTree.value})`));
 	} else if (elseBlock) {
 		worksheet.getCell(blockCentralCellY + 1, DESTRUCTURE_SPAN * nesting + 1).value = getRichtextValue(`(ELSE)`);
 	} else if (untilBlock) {
