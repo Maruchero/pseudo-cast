@@ -42,7 +42,8 @@
 		while (
 			cursorPosition - discanceFromLineStart > 0 &&
 			pseudocodifica[cursorPosition - discanceFromLineStart] != '\n'
-		) discanceFromLineStart++;
+		)
+			discanceFromLineStart++;
 		if (pseudocodifica[cursorPosition - discanceFromLineStart] == '\n') discanceFromLineStart--;
 
 		if (e.key == 'Tab') {
@@ -53,7 +54,10 @@
 				discanceFromLineStart++;
 			}
 			// Insert spaces
-			pseudocodifica = pseudocodifica.substring(0, cursorPosition) + ' '.repeat(spacesToInsert) + pseudocodifica.substring(cursorPosition);
+			pseudocodifica =
+				pseudocodifica.substring(0, cursorPosition) +
+				' '.repeat(spacesToInsert) +
+				pseudocodifica.substring(cursorPosition);
 		}
 	};
 </script>
@@ -74,9 +78,9 @@
 	</div>
 
 	<img src="/user.png" alt="" />
-	<input type="text" name="autore" placeholder="Autore" bind:value={author} />
+	<input type="text" name="autore" placeholder="Autore" bind:value={author} required />
 	<img src="/rename.png" alt="" />
-	<input type="text" name="titolo" placeholder="Titolo" bind:value={titolo} />
+	<input type="text" name="titolo" placeholder="Titolo" bind:value={titolo} required />
 	<img src="/code.png" alt="" />
 	<textarea
 		name="pseudocodifica"
@@ -86,6 +90,7 @@
 		bind:this={textarea}
 		bind:value={pseudocodifica}
 		on:keydown={keydownListener}
+		required
 	/>
 	<span class="empty" />
 
