@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { text } from '@sveltejs/kit';
+
 	let pseudocodifica: string;
 	// pseudocodifica = `INIZIO
 	// Apertura File I/O
@@ -30,6 +32,34 @@
 
 	let author: string;
 	// author = "Garonzi Marcello";
+	let textarea: HTMLTextAreaElement;
+
+	const keydownListener = (e: KeyboardEvent) => {
+		const cursorPosition = textarea.selectionStart;
+		console.log(cursorPosition);
+
+		let discanceFromLineStart = 0;
+		while (
+			cursorPosition - discanceFromLineStart > 0 &&
+			pseudocodifica[cursorPosition - discanceFromLineStart] != '\n'
+		)
+			discanceFromLineStart++;
+		if (pseudocodifica[cursorPosition - discanceFromLineStart] == '\n') discanceFromLineStart--;
+
+		if (e.key == 'Tab') {
+			e.preventDefault();
+			let spacesToInsert = discanceFromLineStart % 4 == 0 ? 4 : 0;
+			while (discanceFromLineStart % 4 != 0) {
+				spacesToInsert++;
+				discanceFromLineStart++;
+			}
+			// Insert spaces
+			pseudocodifica =
+				pseudocodifica.substring(0, cursorPosition) +
+				' '.repeat(spacesToInsert) +
+				pseudocodifica.substring(cursorPosition);
+		}
+	};
 </script>
 
 <!-- HTML -->
@@ -37,29 +67,30 @@
 
 <form method="post" action="/download">
 	<div class="badges">
-		<div class="badge">
-			v0.0.1
-		</div>
+		<div class="badge">v0.0.2</div>
 		<div class="badge">
 			IT
-			<img src="flag-italy.png" alt="" style="border-radius: 2px; height: 1em;">
+			<img src="flag-italy.png" alt="" style="border-radius: 2px; height: 1em;" />
 		</div>
 		<a class="badge" href="https://github.com/Maruchero/pseudo-cast" target="_blank">
-			<img src="github.svg" alt="">
+			<img src="github.svg" alt="" />
 		</a>
 	</div>
 
 	<img src="/user.png" alt="" />
-	<input type="text" name="autore" placeholder="Autore" bind:value={author} />
+	<input type="text" name="autore" placeholder="Autore" bind:value={author} required />
 	<img src="/rename.png" alt="" />
-	<input type="text" name="titolo" placeholder="Titolo" bind:value={titolo} />
+	<input type="text" name="titolo" placeholder="Titolo" bind:value={titolo} required />
 	<img src="/code.png" alt="" />
 	<textarea
 		name="pseudocodifica"
 		cols="30"
 		rows="20"
 		placeholder="Pseudo-codice"
+		bind:this={textarea}
 		bind:value={pseudocodifica}
+		on:keydown={keydownListener}
+		required
 	/>
 	<span class="empty" />
 
